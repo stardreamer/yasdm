@@ -1,0 +1,21 @@
+@startuml yasdm-system-context
+!include include/C4_Container.puml
+
+title System Context diagram for YASDM
+
+LAYOUT_WITH_LEGEND()
+
+Person(user, "User")
+
+System(yasdm, "Yet Another Secret Ded Moroz", "Allows users to organize Secret Santa events")
+System_Ext(goauth, "Google OAuth")
+System_Ext(twoauth, "Twitter OAuth")
+System_Ext(tbot, "Telegram bot api")
+
+
+Rel(user, yasdm, "Uses system for organising Secret Santa events")
+Rel(yasdm, goauth, "Uses Google OAuth for user authentication")
+Rel(yasdm, twoauth, "Uses Twitter OAuth for user authentication")
+Rel(yasdm, tbot, "Uses Telegram bot api for delivering user notifications")
+
+@enduml
