@@ -4,6 +4,7 @@
 title System Context diagram for YASDM
 
 LAYOUT_WITH_LEGEND()
+LAYOUT_AS_SKETCH()
 
 Person(user, "User")
 

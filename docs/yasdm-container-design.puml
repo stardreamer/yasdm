@@ -1,0 +1,38 @@
+@startuml yasdm-container-design
+!include include/C4_Container.puml
+
+skinparam wrapWidth 350
+skinparam maxMessageSize 200
+
+title Container diagram for YASDM
+
+LAYOUT_WITH_LEGEND()
+'LAYOUT_LEFT_RIGHT
+LAYOUT_AS_SKETCH()
+
+Person(user, "User")
+
+System_Boundary(yasdm, "Yet Another Secret Ded Moroz") {
+    Container(reverse_proxy, "Reverse Proxy", "Nginx", "Serves SPA to users and provides access to API")
+    Container(web_app, "Frontend", "Nginx, C#, Blazor (WASM)", "Serves SPA to users")
+    Container(api,"API", "C#, Asp.Net Core 3.1, REST", "Provides necessary functionality via REST API for organizing SecretSanta events")
+    ContainerDb(db, "Database", "PostgreSQL", "")
+    
+}
+
+
+System_Ext(goauth, "Google OAuth")
+System_Ext(twoauth, "Twitter OAuth")
+System_Ext(tbot, "Telegram bot api")
+
+
+Rel(user, reverse_proxy, "Visits service using", "HTTPS")
+Rel(reverse_proxy, web_app, "Delivers SPA to user", "HTTPS")
+Rel(user, web_app, "Uses system for organising Secret Santa events", "HTTPS")
+Rel(web_app, api, "Makes API calls to", "JSON/HTTP")
+Rel(api, db, "Read from and writes to", "Entity Framework Core")
+Rel(api, goauth, "Uses Google OAuth for user authentication")
+Rel(api, twoauth, "Uses Twitter OAuth for user authentication")
+Rel(api, tbot, "Uses Telegram bot api for delivering user notifications")
+
+@enduml
