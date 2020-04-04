@@ -15,7 +15,7 @@ Person(user, "User")
 System_Boundary(yasdm, "Yet Another Secret Ded Moroz") {
     Container(reverse_proxy, "Reverse Proxy", "Nginx", "Serves SPA to users and provides access to API")
     Container(web_app, "Frontend", "Nginx, C#, Blazor (WASM)", "Serves SPA to users")
-    Container(api,"API", "C#, Asp.Net Core 3.1, REST", "Provides necessary functionality via REST API for organizing SecretSanta events")
+    Container(api,"API", "C#, Asp.Net Core 3.1, REST", "Provides necessary functionality via REST API for organising SecretSanta events")
     ContainerDb(db, "Database", "PostgreSQL", "")
     
 }
