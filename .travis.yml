@@ -11,6 +11,6 @@ jobs:
     script: dotnet test YASDM.Model.Tests/YASDM.Model.Tests.csproj /p:CollectCoverage=true
       /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
     after_success:
-      - ./upload-coveralls.sh
+      script: ./upload-coveralls.sh
 
    
