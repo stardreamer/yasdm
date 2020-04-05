@@ -8,10 +8,10 @@ jobs:
     name: Unit Tests
     script: dotnet test YASDM.Model.Tests/YASDM.Model.Tests.csproj /p:CollectCoverage=true
       /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
-  - stage: coverage
-    name: Coverage report
-    dotnet: 2.1
-    language: csharp
-    script:
-    - dotnet tool install coveralls.net --version 1.0.0
-    - "./tools/csmacnz.Coveralls --opencover -i YASDM.Model.Tests/TestResults/coverage.opencover.xml -r $COVERALL_REPO_TOKEN > /dev/null 2>&1 "
+    after_success:
+      dotnet: 2.1
+      language: csharp
+      script:
+      - dotnet tool install coveralls.net --version 1.0.0
+      - "./tools/csmacnz.Coveralls --opencover -i YASDM.Model.Tests/TestResults/coverage.opencover.xml -r $COVERALL_REPO_TOKEN > /dev/null 2>&1 "
+   
