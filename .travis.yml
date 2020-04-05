@@ -9,7 +9,7 @@ jobs:
   - stage: test
     name: Unit Tests
     script: dotnet test YASDM.Model.Tests/YASDM.Model.Tests.csproj /p:CollectCoverage=true
-      /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=lcov
+      /p:CoverletOutput=TestResults/ /p:CoverletOutputFormat=opencover
     after_success:
       script: ./upload-coveralls.sh
 
