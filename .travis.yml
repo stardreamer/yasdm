@@ -3,6 +3,9 @@ mono: none
 dotnet: 3.1
 before_install:
   - sudo apt-get install dotnet-sdk-2.1
+  - export REPO_COMMIT_AUTHOR=$(git show -s --pretty=format:"%cn")
+  - export REPO_COMMIT_AUTHOR_EMAIL=$(git show -s --pretty=format:"%ce")
+  - export REPO_COMMIT_MESSAGE=$(git show -s --pretty=format:"%s")
 install: dotnet restore
 jobs:
   include:
