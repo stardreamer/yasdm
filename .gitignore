@@ -39,3 +39,5 @@ publish/
 .vs/
 
 YASDM.Api/appsettings.json
+
+TestResults
