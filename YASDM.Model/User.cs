@@ -17,6 +17,7 @@ namespace YASDM.Model
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
 
+        public List<RefreshToken> RefreshTokens { get; set; }
 
     }
 }
