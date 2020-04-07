@@ -1,16 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using YASDM.Api.Services;
 using YASDM.Model.DTO;
@@ -26,11 +17,11 @@ namespace YASDM.Api.Controllers
     public class TokenController : ControllerBase
     {
         private IUserService _userService;
-        private IConfiguration _configuration;
-        public TokenController(IUserService userService, IConfiguration configuration)
+        private ITokenService _tokenService;
+        public TokenController(IUserService userService, ITokenService refreshService)
         {
             _userService = userService;
-            _configuration = configuration;
+            _tokenService = refreshService;
         }
 
         [AllowAnonymous]
@@ -39,32 +30,73 @@ namespace YASDM.Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<AuthDTO>> GetToken([FromBody]AuthRegisterDTO loginDTO)
         {
-            var user = await _userService.Authenticate(loginDTO.Username, loginDTO.Password);
-
-            if (user == null)
-                return new ObjectResult("Username or password is incorrect") { StatusCode = StatusCodes.Status500InternalServerError };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration["Secret"]);
-            var tokenDescriptor = new SecurityTokenDescriptor
+            try
             {
-                Subject = new ClaimsIdentity(new Claim[]
+                var user = await _userService.Authenticate(loginDTO.Username, loginDTO.Password);
+
+                if (user == null)
+                    return new ObjectResult("Username or password is incorrect") { StatusCode = StatusCodes.Status500InternalServerError };
+
+                var tokens = await _tokenService.GetTokens(user.Id.ToString());
+
+                // return basic user info and authentication token
+                return new AuthDTO
                 {
-                    new Claim(ClaimTypes.Name, user.Id.ToString())
-                }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = tokenHandler.WriteToken(token);
-
-            // return basic user info and authentication token
-            return new AuthDTO
+                    Id = user.Id,
+                    Username = user.UserName,
+                    Token = tokens.Token,
+                    RefreshToken = tokens.RefreshToken
+                };
+            }
+            catch (ApiException apiException)
             {
-                Id = user.Id,
-                Username = user.UserName,
-                Token = tokenString
-            };
+                return new ObjectResult(apiException.Message) { StatusCode = StatusCodes.Status401Unauthorized };
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("refresh")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<RefreshTokenDTO>> Refresh([FromBody]RefreshTokenDTO refreshTokenDTO)
+        {
+            try
+            {
+                var tokens = await _tokenService.RefreshTokens(refreshTokenDTO);
+
+                // return basic user info and authentication token
+                return new RefreshTokenDTO
+                {
+                    Token = tokens.Token,
+                    RefreshToken = tokens.RefreshToken
+                };
+            }
+            catch (SecurityTokenExpiredException)
+            {
+                return new ObjectResult("Refresh token has expired") { StatusCode = StatusCodes.Status401Unauthorized };
+            }
+            catch (ApiException apiException)
+            {
+                return new ObjectResult(apiException.Message) { StatusCode = StatusCodes.Status401Unauthorized };
+            }
+        }
+
+        [HttpPost("revokeRefreshToken")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult> RevokeRefresh([FromBody]RefreshTokenDTO refreshTokenDTO)
+        {
+            try
+            {
+                var tokens = await _tokenService.RefreshTokens(refreshTokenDTO);
+
+                // return basic user info and authentication token
+                return Ok();
+            }
+            catch (ApiException apiException)
+            {
+                return new ObjectResult(apiException.Message) { StatusCode = StatusCodes.Status401Unauthorized };
+            }
         }
 
     }
