@@ -55,6 +55,14 @@ namespace YASDM.Api
                             context.Fail("Unauthorized");
                         }
                         return Task.CompletedTask;
+                    },
+                    OnAuthenticationFailed = context =>
+                    {
+                        if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                        {
+                            context.Response.Headers.Add("Token-Expired", "true");
+                        }
+                        return Task.CompletedTask;
                     }
                 };
                 x.RequireHttpsMetadata = false;
