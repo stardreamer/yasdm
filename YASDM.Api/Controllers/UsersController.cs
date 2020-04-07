@@ -1,30 +1,30 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using YASDM.Model;
+using YASDM.Api.Services;
 using YASDM.Model.DTO;
 
 namespace YASDM.Api.Controllers
 {
-
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
-        private YASDMApiDbContext _db;
+        private IUserService _userService;
 
-        public UsersController(YASDMApiDbContext db)
+        public UsersController(IUserService userService)
         {
-            _db = db;
+            _userService = userService;
         }
 
         [HttpGet]
         public async Task<IEnumerable<UserDTO>> GetUsersAsync()
         {
-            var users = await _db.Users.ToListAsync();
+            var users = await _userService.GetAll();
 
             return users.Select(u => new UserDTO
             {
@@ -40,7 +40,7 @@ namespace YASDM.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<UserDetailsDTO>> GetUserDetailedAsync(int id)
         {
-            var user = await _db.Users.Where(u => u.Id == id).Include(u => u.UserRooms).SingleOrDefaultAsync();
+            var user = await _userService.GetEagerById(id);
 
             if (user is null)
             {
@@ -52,6 +52,7 @@ namespace YASDM.Api.Controllers
                 Id = user.Id,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                Username = user.UserName,
                 Rooms = user.UserRooms.Select(
                     ur => new RoomDTO
                     {
@@ -63,51 +64,57 @@ namespace YASDM.Api.Controllers
             };
         }
 
+
+        [AllowAnonymous]
         [HttpPost]
-        public async Task<ActionResult<UserDTO>> PostUser([FromBody] UserDTO userDTO)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<UserDTO>> PostUser([FromBody] AuthRegisterDTO registerDTO)
         {
             if (!ModelState.IsValid)
             {
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var user = new User
+            try
             {
-                FirstName = userDTO.FirstName,
-                LastName = userDTO.LastName,
-                UserName = userDTO.Username
+                var user = await _userService.Create(registerDTO);
 
-            };
-            _db.Users.Add(user);
-            await _db.SaveChangesAsync();
+                return new UserDTO
+                {
+                    Id = user.Id,
+                    Username = user.UserName
+                };
+            }
+            catch (ApiException apiException)
+            {
+                return new ObjectResult(apiException.Message) { StatusCode = StatusCodes.Status500InternalServerError };
+            }
+            catch
+            {
+                return new ObjectResult("Unexpected Error") { StatusCode = StatusCodes.Status500InternalServerError };
+            }
 
-            userDTO.Id = user.Id;
-
-            return userDTO;
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> PutUserAsync([FromBody] UserDTO userDTO)
+        public async Task<IActionResult> PutUserAsync(int id, [FromBody] UserDTO userDTO)
         {
             if (!ModelState.IsValid)
             {
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var user = await _db.Users.Where(u => u.Id == userDTO.Id).SingleOrDefaultAsync();
-
-            if (user is null)
+            try
             {
-                return NotFound();
+                await _userService.UpdateUser(id, userDTO);
             }
-
-            user.FirstName = userDTO.FirstName;
-            user.LastName = userDTO.LastName;
-            user.UserName = userDTO.Username;
-
-            await _db.SaveChangesAsync();
+            catch (KeyNotFoundException)
+            {
+                NotFound();
+            }
 
             return Ok();
         }
@@ -122,16 +129,14 @@ namespace YASDM.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var user = await _db.Users.Where(u => u.Id == id).SingleOrDefaultAsync();
-
-            if (user is null)
+            try
             {
-                return NotFound();
+                await _userService.Delete(id);
             }
-
-            _db.Users.Remove(user);
-
-            await _db.SaveChangesAsync();
+            catch (KeyNotFoundException)
+            {
+                NotFound();
+            }
 
             return Ok();
         }
