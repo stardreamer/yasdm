@@ -25,7 +25,11 @@ namespace YASDM.Client
             builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
             builder.Services.AddScoped<IAuthService, AuthService>();
 
-            await builder.Build().RunAsync();
+            var host = builder.Build();
+            var httpClient = host.Services.GetRequiredService<HttpClient>();
+            httpClient.BaseAddress = new Uri("http://localhost:5002");
+
+            await host.RunAsync();
         }
     }
 }
