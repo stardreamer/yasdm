@@ -60,7 +60,8 @@ namespace YASDM.Api.Controllers
                         Id = ur.User.Id,
                         FirstName = ur.User.FirstName,
                         LastName = ur.User.LastName,
-                        Username = ur.User.UserName
+                        Username = ur.User.UserName,
+                        Email = ur.User.Email
                     }).ToList()
             };
         }
