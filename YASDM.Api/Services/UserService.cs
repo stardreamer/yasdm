@@ -43,6 +43,16 @@ namespace YASDM.Api.Services
         {
             if (string.IsNullOrWhiteSpace(registerDTO.Password))
                 throw new ApiException("Password is required");
+            
+            if(string.IsNullOrWhiteSpace(registerDTO.Username))
+            {
+                throw new ApiException("Username can't be empty");
+            }
+
+            if(!Utils.IsValidEmail(registerDTO.Email))
+            {
+                throw new ApiException("Invalid email");
+            }
 
             if (await _db.Users.AnyAsync(x => x.UserName == registerDTO.Username))
                 throw new ApiException("Username \"" + registerDTO.Username + "\" is already taken");
@@ -53,6 +63,7 @@ namespace YASDM.Api.Services
             var user = new User
             {
                 UserName = registerDTO.Username,
+                Email = registerDTO.Email,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt
             };
@@ -131,9 +142,14 @@ namespace YASDM.Api.Services
                 throw new KeyNotFoundException();
             }
 
+            if(!Utils.IsValidEmail(updateDTO.Email)){
+                throw new ApiException("Invalid email!");
+            }
+
             user.FirstName = updateDTO.FirstName;
             user.LastName = updateDTO.LastName;
             user.UserName = updateDTO.Username;
+            user.Email = updateDTO.Email;
 
             await _db.SaveChangesAsync();
 
