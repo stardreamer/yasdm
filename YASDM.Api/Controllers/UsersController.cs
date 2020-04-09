@@ -53,6 +53,7 @@ namespace YASDM.Api.Controllers
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Username = user.UserName,
+                Email = user.Email,
                 Rooms = user.UserRooms.Select(
                     ur => new RoomDTO
                     {
@@ -83,7 +84,8 @@ namespace YASDM.Api.Controllers
                 return new UserDTO
                 {
                     Id = user.Id,
-                    Username = user.UserName
+                    Username = user.UserName,
+                    Email = user.Email
                 };
             }
             catch (ApiException apiException)

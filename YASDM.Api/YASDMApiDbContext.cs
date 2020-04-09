@@ -24,6 +24,7 @@ namespace YASDM.Api
 
             var userEntity = modelBuilder.Entity<User>();
             userEntity.HasIndex(u => u.UserName).IsUnique();
+            userEntity.HasIndex(u=> u.Email).IsUnique();
 
             userEntity.HasKey(user => user.Id);
 
