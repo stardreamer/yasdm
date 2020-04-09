@@ -44,6 +44,7 @@ namespace YASDM.Api.Controllers
                 {
                     Id = user.Id,
                     Username = user.UserName,
+                    Email = user.Email,
                     Token = tokens.Token,
                     RefreshToken = tokens.RefreshToken
                 };
