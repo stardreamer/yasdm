@@ -101,13 +101,13 @@ namespace YASDM.Api.Services
 
             if (savedToken == null)
             {
-                throw new ApiException("Refresh token was not found");
+                throw new ApiNotFoundException("Your refresh token was not found in the database");
             }
 
             if (DateTime.UtcNow > savedToken.ExpirationDate)
             {
                 await RemoveToken(savedToken);
-                throw new SecurityTokenExpiredException();
+                throw new ApiRefreshTokenExpiredException();
             }
 
             var realUserId = int.Parse(userId);

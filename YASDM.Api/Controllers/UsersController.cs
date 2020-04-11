@@ -44,7 +44,7 @@ namespace YASDM.Api.Controllers
 
             if (user is null)
             {
-                return NotFound();
+                throw new ApiNotFoundException();
             }
 
             return new UserDetailsDTO
@@ -77,25 +77,15 @@ namespace YASDM.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            try
-            {
-                var user = await _userService.Create(registerDTO);
 
-                return new UserDTO
-                {
-                    Id = user.Id,
-                    Username = user.UserName,
-                    Email = user.Email
-                };
-            }
-            catch (ApiException apiException)
+            var user = await _userService.Create(registerDTO);
+
+            return new UserDTO
             {
-                return new ObjectResult(apiException.Message) { StatusCode = StatusCodes.Status500InternalServerError };
-            }
-            catch
-            {
-                return new ObjectResult("Unexpected Error") { StatusCode = StatusCodes.Status500InternalServerError };
-            }
+                Id = user.Id,
+                Username = user.UserName,
+                Email = user.Email
+            };
 
         }
 
@@ -109,14 +99,7 @@ namespace YASDM.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            try
-            {
-                await _userService.UpdateUser(id, userDTO);
-            }
-            catch (KeyNotFoundException)
-            {
-                NotFound();
-            }
+            await _userService.UpdateUser(id, userDTO);
 
             return Ok();
         }
@@ -131,14 +114,7 @@ namespace YASDM.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            try
-            {
-                await _userService.Delete(id);
-            }
-            catch (KeyNotFoundException)
-            {
-                NotFound();
-            }
+            await _userService.Delete(id);
 
             return Ok();
         }

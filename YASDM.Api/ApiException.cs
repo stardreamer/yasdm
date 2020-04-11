@@ -5,6 +5,10 @@ namespace YASDM.Api
     public class ApiUnauthorizedException: ApiException
     {
         public ApiUnauthorizedException() : base("You are not authorized to perform this action") {}
+
+        public ApiUnauthorizedException(string message) : base(message)
+        {
+        }
     }
 
         public class ApiRefreshTokenExpiredException: ApiException
