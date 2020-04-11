@@ -31,7 +31,7 @@ namespace YASDM.Client.Services
             var result = await _httpClient.PostAsJsonAsync<AuthRegisterDTO>("api/users", registerModel);
             if (!result.IsSuccessStatusCode)
             {
-                throw new ClientException(await result.Content.ReadAsStringAsync());
+                throw await ApiUtils.GetClientException(result.Content);
             }
 
             return await result.Content.ReadFromJsonAsync<AuthDTO>();
@@ -43,7 +43,7 @@ namespace YASDM.Client.Services
             var response = await _httpClient.PostAsync("api/token", new StringContent(loginAsJson, Encoding.UTF8, "application/json"));
             if (!response.IsSuccessStatusCode)
             {
-                throw new ClientException(await response.Content.ReadAsStringAsync());
+                throw await ApiUtils.GetClientException(response.Content);
             }
             var loginResult = JsonSerializer.Deserialize<AuthDTO>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
