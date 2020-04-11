@@ -2,6 +2,21 @@ using System;
 
 namespace YASDM.Api
 {
+    public class ApiUnauthorizedException: ApiException
+    {
+        public ApiUnauthorizedException() : base("You are not authorized to perform this action") {}
+    }
+
+        public class ApiRefreshTokenExpiredException: ApiException
+    {
+        public ApiRefreshTokenExpiredException() : base("This refresh token has expired") {}
+    }
+
+    public class ApiNotFoundException: ApiException
+    {
+        public ApiNotFoundException(string message = null) : base(message ?? "The requested resource was not found") {}
+    }
+
     public class ApiException : Exception
     {
         public ApiException() : base() { }
