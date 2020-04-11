@@ -45,7 +45,7 @@ namespace YASDM.Api.Controllers
 
             if (room is null)
             {
-                return NotFound();
+                throw new ApiNotFoundException();
             }
 
             return new RoomDetailsDTO
@@ -102,7 +102,7 @@ namespace YASDM.Api.Controllers
 
             if (room is null)
             {
-                return NotFound();
+                throw new ApiNotFoundException();
             }
 
             room.Name = roomDTO.Name;
@@ -128,7 +128,7 @@ namespace YASDM.Api.Controllers
 
             if (room is null)
             {
-                return NotFound();
+                throw new ApiNotFoundException();
             }
 
             _db.Rooms.Remove(room);

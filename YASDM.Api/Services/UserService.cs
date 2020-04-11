@@ -79,7 +79,7 @@ namespace YASDM.Api.Services
             var user = await _db.Users.FindAsync(id);
             if (user is null)
             {
-                throw new KeyNotFoundException();
+                throw new ApiNotFoundException();
             }
 
             _db.Users.Remove(user);
@@ -106,7 +106,7 @@ namespace YASDM.Api.Services
             var user = await _db.Users.FindAsync(id);
 
             if (user == null)
-                throw new KeyNotFoundException();
+                throw new ApiNotFoundException();
 
             // update username if it has changed
             if (!string.IsNullOrWhiteSpace(registerDTO.Username) && registerDTO.Username != user.UserName)
@@ -139,7 +139,7 @@ namespace YASDM.Api.Services
 
             if (user is null)
             {
-                throw new KeyNotFoundException();
+                throw new ApiNotFoundException();
             }
 
             if(!Utils.IsValidEmail(updateDTO.Email)){

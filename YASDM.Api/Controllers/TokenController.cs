@@ -30,29 +30,24 @@ namespace YASDM.Api.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<AuthDTO>> GetToken([FromBody]AuthRegisterDTO loginDTO)
         {
-            try
+
+            var user = await _userService.Authenticate(loginDTO.Username, loginDTO.Password);
+
+            if (user == null)
+                return new ObjectResult("Username or password is incorrect") { StatusCode = StatusCodes.Status500InternalServerError };
+
+            var tokens = await _tokenService.GetTokens(user.Id.ToString());
+
+            // return basic user info and authentication token
+            return new AuthDTO
             {
-                var user = await _userService.Authenticate(loginDTO.Username, loginDTO.Password);
+                Id = user.Id,
+                Username = user.UserName,
+                Email = user.Email,
+                Token = tokens.Token,
+                RefreshToken = tokens.RefreshToken
+            };
 
-                if (user == null)
-                    return new ObjectResult("Username or password is incorrect") { StatusCode = StatusCodes.Status500InternalServerError };
-
-                var tokens = await _tokenService.GetTokens(user.Id.ToString());
-
-                // return basic user info and authentication token
-                return new AuthDTO
-                {
-                    Id = user.Id,
-                    Username = user.UserName,
-                    Email = user.Email,
-                    Token = tokens.Token,
-                    RefreshToken = tokens.RefreshToken
-                };
-            }
-            catch (ApiException apiException)
-            {
-                return new ObjectResult(apiException.Message) { StatusCode = StatusCodes.Status401Unauthorized };
-            }
         }
 
         [AllowAnonymous]
@@ -61,25 +56,16 @@ namespace YASDM.Api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<RefreshTokenDTO>> Refresh([FromBody]RefreshTokenDTO refreshTokenDTO)
         {
-            try
-            {
-                var tokens = await _tokenService.RefreshTokens(refreshTokenDTO);
 
-                // return basic user info and authentication token
-                return new RefreshTokenDTO
-                {
-                    Token = tokens.Token,
-                    RefreshToken = tokens.RefreshToken
-                };
-            }
-            catch (SecurityTokenExpiredException)
+            var tokens = await _tokenService.RefreshTokens(refreshTokenDTO);
+
+            // return basic user info and authentication token
+            return new RefreshTokenDTO
             {
-                return new ObjectResult("Refresh token has expired") { StatusCode = StatusCodes.Status401Unauthorized };
-            }
-            catch (ApiException apiException)
-            {
-                return new ObjectResult(apiException.Message) { StatusCode = StatusCodes.Status401Unauthorized };
-            }
+                Token = tokens.Token,
+                RefreshToken = tokens.RefreshToken
+            };
+
         }
 
         [HttpPost("revokeRefreshToken")]
@@ -87,17 +73,12 @@ namespace YASDM.Api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult> RevokeRefresh([FromBody]RefreshTokenDTO refreshTokenDTO)
         {
-            try
-            {
-                var tokens = await _tokenService.RefreshTokens(refreshTokenDTO);
 
-                // return basic user info and authentication token
-                return Ok();
-            }
-            catch (ApiException apiException)
-            {
-                return new ObjectResult(apiException.Message) { StatusCode = StatusCodes.Status401Unauthorized };
-            }
+            var tokens = await _tokenService.RefreshTokens(refreshTokenDTO);
+
+            // return basic user info and authentication token
+            return Ok();
+
         }
 
     }

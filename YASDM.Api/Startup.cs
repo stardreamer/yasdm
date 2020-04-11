@@ -1,18 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Logging;
 using YASDM.Api.Services;
 using Microsoft.IdentityModel.Tokens;
 
@@ -86,9 +80,14 @@ namespace YASDM.Api
         {
             db.Database.Migrate();
 
+            
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                app.UseMiddleware<ExeptionHandlingMiddleware>(true);
+            }
+            else
+            {
+                app.UseMiddleware<ExeptionHandlingMiddleware>();
             }
 
             app.UseRouting();

@@ -45,7 +45,7 @@ namespace YASDM.Api.Controllers
 
             if (ur is null)
             {
-                return NotFound();
+                throw new ApiNotFoundException();
             }
 
             return new MembershipDetailDTO
@@ -93,7 +93,7 @@ namespace YASDM.Api.Controllers
             }
             catch (DbUpdateException)
             {
-                return new ObjectResult($"Possible cause: there might already exist a link between user(id: {membershipDTO.UserId}) and room(id: {membershipDTO.RoomId})") { StatusCode = StatusCodes.Status500InternalServerError };
+                throw new ApiException($"Possible cause: there might already exist a link between user(id: {membershipDTO.UserId}) and room(id: {membershipDTO.RoomId})");
             }
 
 
@@ -116,7 +116,7 @@ namespace YASDM.Api.Controllers
 
             if (ur is null)
             {
-                return NotFound();
+                throw new ApiNotFoundException();
             }
 
             _db.UserRooms.Remove(ur);

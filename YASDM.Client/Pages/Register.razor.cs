@@ -16,7 +16,7 @@ namespace YASDM.Client.Pages
 
         protected AuthRegisterDTO RegisterDto = new AuthRegisterDTO();
 
-        protected string ConfirmPassword {get;set;}
+        protected string ConfirmPassword { get; set; }
 
         protected bool ShowErrors = false;
 
@@ -24,9 +24,17 @@ namespace YASDM.Client.Pages
 
         protected async Task HandleRegistration()
         {
-            ShowErrors = false;
-            var result = await AuthService.Register(RegisterDto);
-            NavigationManager.NavigateTo("/login");
+            try
+            {
+                ShowErrors = false;
+                var result = await AuthService.Register(RegisterDto);
+                NavigationManager.NavigateTo("/login");
+            }
+            catch (ClientException e)
+            {
+                ShowErrors = true;
+                Errors = new List<string> { e.Message };
+            }
         }
 
     }
