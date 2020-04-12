@@ -34,7 +34,7 @@ namespace YASDM.Api.Controllers
             var user = await _userService.Authenticate(loginDTO.Username, loginDTO.Password);
 
             if (user == null)
-                return new ObjectResult("Username or password is incorrect") { StatusCode = StatusCodes.Status500InternalServerError };
+                throw new ApiUnauthorizedException("Username or password is incorrect");
 
             var tokens = await _tokenService.GetTokens(user.Id.ToString());
 
