@@ -1,4 +1,7 @@
 
+env.api
+env.db
+
 *.swp
 *.*~
 project.lock.json
