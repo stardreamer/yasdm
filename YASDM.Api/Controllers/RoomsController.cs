@@ -88,17 +88,17 @@ namespace YASDM.Api.Controllers
             return roomDTO;
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> PutRoomAsync([FromBody] RoomDTO roomDTO)
+        public async Task<IActionResult> PutRoomAsync(int id, [FromBody] RoomDTO roomDTO)
         {
             if (!ModelState.IsValid)
             {
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var room = await _db.Rooms.Where(u => u.Id == roomDTO.Id).SingleOrDefaultAsync();
+            var room = await _db.Rooms.Where(u => u.Id == id).SingleOrDefaultAsync();
 
             if (room is null)
             {
