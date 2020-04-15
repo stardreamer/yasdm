@@ -1,0 +1,27 @@
+version: '3.7'
+services:
+  postgres:
+    container_name: postgres_container
+    image: postgres
+    env_file:
+      - env.db
+    volumes:
+      - yasdm_db:/data/postgres
+    restart: unless-stopped
+
+  yasdm:
+    container_name: yasdm
+    build:
+      context: ./
+      target: final
+    ports: 
+      - "8080:80"
+    restart: unless-stopped
+    env_file:
+      - env.yasdm
+    depends_on:
+      - postgres
+
+volumes:
+  yasdm_db:
+    external: true

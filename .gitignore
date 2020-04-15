@@ -1,4 +1,7 @@
 
+env.yasdm
+env.db
+
 *.swp
 *.*~
 project.lock.json

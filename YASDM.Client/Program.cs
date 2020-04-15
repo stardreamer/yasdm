@@ -27,7 +27,7 @@ namespace YASDM.Client
 
             var host = builder.Build();
             var httpClient = host.Services.GetRequiredService<HttpClient>();
-            httpClient.BaseAddress = new Uri("http://localhost:5002");
+            // httpClient.BaseAddress = new Uri("http://localhost:5002");
 
             await host.RunAsync();
         }

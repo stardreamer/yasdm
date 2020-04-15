@@ -67,6 +67,8 @@ namespace YASDM.Api
                 message = ex.Message;
             }
 
+            Console.WriteLine(FlattenException(ex));
+
             var result = JsonConvert.SerializeObject(new ErrorDTO { Message = message, Trace = isDev ? FlattenException(ex) : "No stack trace" });
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)code;
