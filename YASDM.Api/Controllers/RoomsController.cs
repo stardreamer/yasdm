@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using YASDM.Model;
+using YASDM.Api.Services;
 using YASDM.Model.DTO;
 
 namespace YASDM.Api.Controllers
@@ -15,17 +14,17 @@ namespace YASDM.Api.Controllers
     [Route("api/[controller]")]
     public class RoomsController : ControllerBase
     {
-        private YASDMApiDbContext _db;
+        private IRoomService _roomService;
 
-        public RoomsController(YASDMApiDbContext db)
+        public RoomsController(IRoomService roomService)
         {
-            _db = db;
+            _roomService = roomService;
         }
 
         [HttpGet]
-        public async Task<IEnumerable<RoomDTO>> GetRoomsAsync()
+        public async Task<IEnumerable<RoomDTO>> GetRoomsAsync([FromQuery] PaginationDTO paginationParameters)
         {
-            var rooms = await _db.Rooms.ToListAsync();
+            var rooms = await _roomService.GetPaginated(paginationParameters);
 
             return rooms.Select(r => new RoomDTO
             {
@@ -41,7 +40,7 @@ namespace YASDM.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<RoomDetailsDTO>> GetRoomDetailedAsync(int id)
         {
-            var room = await _db.Rooms.Where(r => r.Id == id).Include(u => u.UserRooms).SingleOrDefaultAsync();
+            var room = await _roomService.GetEagerById(id);
 
             if (room is null)
             {
@@ -74,14 +73,7 @@ namespace YASDM.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var room = new Room
-            {
-                CreationDate = roomDTO.CreationDate,
-                Name = roomDTO.Name,
-                ScheduledDate = roomDTO.ScheduledDate
-            };
-            _db.Rooms.Add(room);
-            await _db.SaveChangesAsync();
+            var room = await _roomService.Create(roomDTO);
 
             roomDTO.Id = room.Id;
 
@@ -98,18 +90,7 @@ namespace YASDM.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var room = await _db.Rooms.Where(u => u.Id == id).SingleOrDefaultAsync();
-
-            if (room is null)
-            {
-                throw new ApiNotFoundException();
-            }
-
-            room.Name = roomDTO.Name;
-            room.CreationDate = roomDTO.CreationDate;
-            room.ScheduledDate = roomDTO.ScheduledDate;
-
-            await _db.SaveChangesAsync();
+            await _roomService.Update(id, roomDTO);
 
             return Ok();
         }
@@ -124,16 +105,7 @@ namespace YASDM.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var room = await _db.Rooms.Where(u => u.Id == id).SingleOrDefaultAsync();
-
-            if (room is null)
-            {
-                throw new ApiNotFoundException();
-            }
-
-            _db.Rooms.Remove(room);
-
-            await _db.SaveChangesAsync();
+            await _roomService.Delete(id);
 
             return Ok();
         }

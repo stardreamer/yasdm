@@ -22,9 +22,9 @@ namespace YASDM.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<UserDTO>> GetUsersAsync()
+        public async Task<IEnumerable<UserDTO>> GetUsersAsync([FromQuery] PaginationDTO paginationParameters)
         {
-            var users = await _userService.GetAll();
+            var users = await _userService.GetPaginated(paginationParameters);
 
             return users.Select(u => new UserDTO
             {

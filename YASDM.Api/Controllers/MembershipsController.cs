@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using YASDM.Api.Services;
 using YASDM.Model;
 using YASDM.Model.DTO;
 
@@ -15,17 +16,17 @@ namespace YASDM.Api.Controllers
     [Route("api/[controller]")]
     public class MembershipsController : ControllerBase
     {
-        private YASDMApiDbContext _db;
+        private IMembershipService _membershipService;
 
-        public MembershipsController(YASDMApiDbContext db)
+        public MembershipsController(IMembershipService membershipService)
         {
-            _db = db;
+            _membershipService = membershipService;
         }
 
         [HttpGet]
-        public async Task<IEnumerable<MembershipDTO>> GetMembershipsAsync()
+        public async Task<IEnumerable<MembershipDTO>> GetMembershipsAsync([FromQuery] PaginationDTO paginationParameters)
         {
-            var urs = await _db.UserRooms.ToListAsync();
+            var urs = await _membershipService.GetPaginated(paginationParameters);
 
             return urs.Select(ur => new MembershipDTO
             {
@@ -41,12 +42,7 @@ namespace YASDM.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<MembershipDetailDTO>> GetMembershipDetailedAsync(int id)
         {
-            var ur = await _db.UserRooms.Where(r => r.Id == id).Include(r => r.User).Include(r => r.Room).SingleOrDefaultAsync();
-
-            if (ur is null)
-            {
-                throw new ApiNotFoundException();
-            }
+            var ur = await _membershipService.GetEagerById(id);
 
             return new MembershipDetailDTO
             {
@@ -81,20 +77,7 @@ namespace YASDM.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var ur = new UserRoom
-            {
-                UserId = membershipDTO.UserId,
-                RoomId = membershipDTO.RoomId
-            };
-            _db.UserRooms.Add(ur);
-            try
-            {
-                await _db.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                throw new ApiException($"Possible cause: there might already exist a link between user(id: {membershipDTO.UserId}) and room(id: {membershipDTO.RoomId})");
-            }
+            var ur = _membershipService.Create(membershipDTO);
 
 
             membershipDTO.Id = ur.Id;
@@ -112,16 +95,7 @@ namespace YASDM.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var ur = await _db.UserRooms.Where(u => u.Id == id).SingleOrDefaultAsync();
-
-            if (ur is null)
-            {
-                throw new ApiNotFoundException();
-            }
-
-            _db.UserRooms.Remove(ur);
-
-            await _db.SaveChangesAsync();
+            await _membershipService.Delete(id);
 
             return Ok();
         }

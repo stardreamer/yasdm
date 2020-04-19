@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using YASDM.Model;
@@ -43,13 +44,13 @@ namespace YASDM.Api.Services
         {
             if (string.IsNullOrWhiteSpace(registerDTO.Password))
                 throw new ApiException("Password is required");
-            
-            if(string.IsNullOrWhiteSpace(registerDTO.Username))
+
+            if (string.IsNullOrWhiteSpace(registerDTO.Username))
             {
                 throw new ApiException("Username can't be empty");
             }
 
-            if(!Utils.IsValidEmail(registerDTO.Email))
+            if (!Utils.IsValidEmail(registerDTO.Email))
             {
                 throw new ApiException("Invalid email");
             }
@@ -142,7 +143,8 @@ namespace YASDM.Api.Services
                 throw new ApiNotFoundException();
             }
 
-            if(!Utils.IsValidEmail(updateDTO.Email)){
+            if (!Utils.IsValidEmail(updateDTO.Email))
+            {
                 throw new ApiException("Invalid email!");
             }
 
@@ -186,6 +188,9 @@ namespace YASDM.Api.Services
             }
         }
 
-
+        public async Task<IEnumerable<User>> GetPaginated(PaginationDTO paginationParameters)
+        {
+            return await _db.Users.ToPagedListAsync(u => u.Id, paginationParameters.PageNumber, paginationParameters.PageSize);
+        }
     }
 }
