@@ -72,6 +72,7 @@ namespace YASDM.Api
             });
 
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IRoomService, RoomService>();
             services.AddScoped<ITokenService, TokenService>();
         }
 
