@@ -8,6 +8,7 @@ using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using YASDM.Client.Services;
 using System.Net.Http;
+using YASDM.Model.Services;
 
 namespace YASDM.Client
 {
@@ -24,6 +25,7 @@ namespace YASDM.Client
             builder.Services.AddOptions();
             builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IUserService, UserService>();
 
             builder.Services.AddSingleton<State>();
 
