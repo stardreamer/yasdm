@@ -1,0 +1,10 @@
+@inherits UserEntryViewModel
+
+<div class="row">
+    <div class="col">
+        <a href="" @onclick="(() => ShowDetailedInfo(User))" @onclick:preventDefault>@User.UserName</a>
+    </div>
+    <div class="col">
+        @User.Email
+    </div>  
+</div>
