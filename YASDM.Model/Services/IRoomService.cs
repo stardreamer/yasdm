@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using YASDM.Model;
 using YASDM.Model.DTO;
 
-namespace YASDM.Api.Services
+namespace YASDM.Model.Services
 {
     public interface IRoomService
     {
