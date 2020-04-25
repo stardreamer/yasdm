@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using YASDM.Api.Services;
 using Microsoft.IdentityModel.Tokens;
+using YASDM.Model.Services;
 
 namespace YASDM.Api
 {
@@ -26,7 +27,7 @@ namespace YASDM.Api
         {
             services.AddControllers();
             services.AddSwaggerDocument();
-            services.AddDbContext<YASDMApiDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("YASDM_Db")));
+            services.AddDbContext<YASDMApiDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("YASDM_Db")), ServiceLifetime.Transient);
 
             var key = Encoding.ASCII.GetBytes(Configuration["Secret"]);
 
