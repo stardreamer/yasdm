@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using YASDM.Model;
 using YASDM.Model.DTO;
+using YASDM.Model.Services;
 
 namespace YASDM.Api.Services
 {

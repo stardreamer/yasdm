@@ -9,6 +9,7 @@ using YASDM.Model.DTO;
 using System.Security.Cryptography;
 using YASDM.Model;
 using System.Threading.Tasks;
+using YASDM.Model.Services;
 
 namespace YASDM.Api.Services
 {
