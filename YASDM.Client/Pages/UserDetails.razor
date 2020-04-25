@@ -1,0 +1,21 @@
+@inherits UserDetailsViewModel
+@page "/UserInfo"
+
+
+<h2>User Details</h2>
+
+<div class="row">
+    <div class="col">
+        @State.SelectedUser.UserName
+    </div> 
+</div>
+<div class="row">
+    <div class="col">
+        @State.SelectedUser.Email
+    </div>  
+</div>
+<div class="row">
+    <div class="col">
+        <a class="btn btn-primary" href="/">Back</a>
+    </div>
+</div>
