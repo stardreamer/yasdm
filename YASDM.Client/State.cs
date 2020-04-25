@@ -7,6 +7,8 @@ namespace YASDM.Client
     {
         public User User { get; set; }
 
+        public User SelectedUser { get; set; }
+
         public List<Room> AvailableRooms { get; set; }
     }
 }
