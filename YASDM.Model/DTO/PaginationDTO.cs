@@ -18,5 +18,10 @@ namespace YASDM.Model.DTO
             }
         }
 
+        public string AsQueryString()
+        {
+            return $"pagenamber={PageNumber}&pagesize={PageSize}";
+        }
+
     }
 }
