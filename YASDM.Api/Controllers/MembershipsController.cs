@@ -78,7 +78,7 @@ namespace YASDM.Api.Controllers
                 return new BadRequestObjectResult(ModelState);
             }
 
-            var ur = _membershipService.Create(membershipDTO);
+            var ur = await _membershipService.Create(membershipDTO);
 
 
             membershipDTO.Id = ur.Id;
