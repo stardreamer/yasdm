@@ -34,7 +34,7 @@ namespace YASDM.Api
             this._isDev = isDev;
         }
 
-        public async Task Invoke(HttpContext context /* other dependencies */)
+        public async Task InvokeAsync(HttpContext context /* other dependencies */)
         {
             try
             {
