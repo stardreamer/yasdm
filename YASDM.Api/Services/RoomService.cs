@@ -68,7 +68,7 @@ namespace YASDM.Api.Services
             return room;
         }
 
-        public async Task<IEnumerable<Room>> GetPaginated(PaginationDTO paginationParameters)
+        public async Task<PagedList<Room>> GetPaginated(PaginationDTO paginationParameters)
         {
             return await _db.Rooms.ToPagedListAsync(u => u.Id, paginationParameters.PageNumber, paginationParameters.PageSize);
         }

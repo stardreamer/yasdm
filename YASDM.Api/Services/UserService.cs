@@ -189,7 +189,7 @@ namespace YASDM.Api.Services
             }
         }
 
-        public async Task<IEnumerable<User>> GetPaginated(PaginationDTO paginationParameters)
+        public async Task<PagedList<User>> GetPaginated(PaginationDTO paginationParameters)
         {
             return await _db.Users.ToPagedListAsync(u => u.Id, paginationParameters.PageNumber, paginationParameters.PageSize);
         }

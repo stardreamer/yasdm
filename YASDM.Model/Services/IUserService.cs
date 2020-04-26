@@ -10,7 +10,7 @@ namespace YASDM.Model.Services
         Task<User> Authenticate(string username, string password);
         Task<IEnumerable<User>> GetAll();
 
-        Task<IEnumerable<User>> GetPaginated(PaginationDTO paginationParameters);
+        Task<PagedList<User>> GetPaginated(PaginationDTO paginationParameters);
         Task<User> GetById(int id);
 
         Task<User> GetEagerById(int id);

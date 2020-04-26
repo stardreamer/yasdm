@@ -8,7 +8,7 @@ namespace YASDM.Model.Services
     {
         Task<IEnumerable<UserRoom>> GetAll();
 
-        Task<IEnumerable<UserRoom>> GetPaginated(PaginationDTO paginationParameters);
+        Task<PagedList<UserRoom>> GetPaginated(PaginationDTO paginationParameters);
         Task<UserRoom> GetById(int id);
 
         Task<UserRoom> GetEagerById(int id);
