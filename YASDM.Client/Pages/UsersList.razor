@@ -26,6 +26,8 @@ else
         {
             <UserEntry User="@user" ShowDetailedInfo="@ShowDetailedInfo"/>
         }
+        <button class="btn btn-secondary" @onclick="(() => PrevPage())">Prev</button>
+        <button class="btn btn-secondary" @onclick="(() => NextPage())">Next</button>
     }
 }
 
