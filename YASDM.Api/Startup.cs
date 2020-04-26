@@ -72,10 +72,10 @@ namespace YASDM.Api
                 };
             });
 
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IRoomService, RoomService>();
-            services.AddScoped<IMembershipService, MembershipService>();
-            services.AddScoped<ITokenService, TokenService>();
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IRoomService, RoomService>();
+            services.AddTransient<IMembershipService, MembershipService>();
+            services.AddTransient<ITokenService, TokenService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
