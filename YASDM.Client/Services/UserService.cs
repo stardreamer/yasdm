@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -47,21 +48,25 @@ namespace YASDM.Client.Services
             throw new System.NotImplementedException();
         }
 
-        public async Task<IEnumerable<User>> GetPaginated(PaginationDTO paginationParameters)
+        public async Task<PagedList<User>> GetPaginated(PaginationDTO paginationParameters)
         {
-            var response = await _httpClient.GetAsync($"api/users?{paginationParameters.AsQueryString()}");
+            var response = await _httpClient.GetAsync($"api/users?{paginationParameters.AsQueryString()}", HttpCompletionOption.ResponseHeadersRead);
             if (!response.IsSuccessStatusCode)
             {
                 throw await ApiUtils.GetClientException(response.Content);
             }
-            var users = JsonSerializer.Deserialize<UserDTO[]>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-            return users.Select(userDTO => new User
+            var users = JsonSerializer.Deserialize<UserDTO[]>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var totalCount = int.Parse(response.Headers.GetValues("X-Total-Count").First());
+            var currentPageNumber = int.Parse(response.Headers.GetValues("X-Current-Page").First());
+            var pageSize = int.Parse(response.Headers.GetValues("X-Page-Size").First());
+
+            return new PagedList<User>(users.Select(userDTO => new User
             {
                 UserName = userDTO.Username,
                 Email = userDTO.Email,
                 FirstName = userDTO.FirstName
-            });
+            }).ToList(), totalCount, currentPageNumber, pageSize);
 
         }
 
