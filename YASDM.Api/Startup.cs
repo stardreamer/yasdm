@@ -83,7 +83,7 @@ namespace YASDM.Api
         {
             db.Database.Migrate();
 
-            
+
             if (env.IsDevelopment())
             {
                 app.UseMiddleware<ExeptionHandlingMiddleware>(true);
@@ -98,8 +98,8 @@ namespace YASDM.Api
             app.UseCors(x => x
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
-                .AllowAnyHeader());
-
+                .AllowAnyHeader()
+                .WithExposedHeaders(new string[] {"X-Total-Count", "X-Total-Pages", "X-Current-Page", "X-Page-Size", "X-Count"}));
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseOpenApi();
