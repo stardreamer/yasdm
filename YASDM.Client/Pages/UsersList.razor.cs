@@ -32,14 +32,18 @@ namespace YASDM.Client.Pages
 
         protected List<User> Users { get; set; }
 
-        private PaginationDTO CurrentPage { get; set; } = new PaginationDTO();
+        private int TotalPageNumber { get; set; }
+
+        private PaginationDTO CurrentPage { get; set; } = new PaginationDTO { PageSize = 4 };
 
         private async Task Update()
         {
             try
             {
                 ShowErrors = false;
-                Users = (await UserService.GetPaginated(CurrentPage)).ToList();
+                var paginated = (await UserService.GetPaginated(CurrentPage));
+                TotalPageNumber = paginated.TotalPages;
+                Users = paginated.ToList();
                 StateHasChanged();
             }
             catch (ClientException e)
@@ -52,6 +56,8 @@ namespace YASDM.Client.Pages
 
         protected async Task NextPage()
         {
+            if(CurrentPage.PageNumber == TotalPageNumber)
+                return;
             CurrentPage.PageNumber += 1;
             await Update();
         }
