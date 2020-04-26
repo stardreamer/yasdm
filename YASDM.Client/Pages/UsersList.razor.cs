@@ -72,7 +72,8 @@ namespace YASDM.Client.Pages
 
         protected override async void OnAfterRender(bool firstRender)
         {
-            await Update();
+            if (firstRender)
+                await Update();
         }
     }
 }
