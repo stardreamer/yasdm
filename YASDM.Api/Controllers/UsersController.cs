@@ -27,12 +27,19 @@ namespace YASDM.Api.Controllers
         {
             var users = await _userService.GetPaginated(paginationParameters);
 
+            Response.Headers.Add("X-Total-Count", users.TotalCount.ToString());
+            Response.Headers.Add("X-Total-Pages", users.TotalPages.ToString());
+            Response.Headers.Add("X-Current-Page", users.CurrentPage.ToString());
+            Response.Headers.Add("X-Page-Size", users.PageSize.ToString());
+            Response.Headers.Add("X-Count", users.Count.ToString());
+
             return users.Select(u => new UserDTO
             {
                 Id = u.Id,
                 FirstName = u.FirstName,
                 LastName = u.LastName,
-                Username = u.UserName
+                Username = u.UserName,
+                Email = u.Email
             });
         }
 
