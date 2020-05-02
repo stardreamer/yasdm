@@ -26,6 +26,8 @@ namespace YASDM.Client
             builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IMembershipService, MembershipService>();
+            builder.Services.AddScoped<IRoomService, RoomService>();
 
             builder.Services.AddSingleton<State>();
 
