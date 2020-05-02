@@ -38,14 +38,29 @@ namespace YASDM.Client.Services
             throw new System.NotImplementedException();
         }
 
-        public Task<User> GetById(int id)
+        public async Task<User> GetById(int id)
         {
-            throw new System.NotImplementedException();
+            return await GetEagerById(id);
         }
 
-        public Task<User> GetEagerById(int id)
+        public async Task<User> GetEagerById(int id)
         {
-            throw new System.NotImplementedException();
+            var response = await _httpClient.GetAsync($"api/users/{id}", HttpCompletionOption.ResponseHeadersRead);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw await ApiUtils.GetClientException(response.Content);
+            }
+
+            var user = JsonSerializer.Deserialize<UserDetailsDTO>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            return new User {
+                Email = user.Email,
+                FirstName = user.FirstName,
+                Id = user.Id,
+                LastName = user.LastName,
+                UserName = user.Username,
+                UserRooms = user.Rooms.Select(u => new UserRoom() {RoomId = u.Id, UserId = user.Id}).ToList()
+            };
         }
 
         public async Task<PagedList<User>> GetPaginated(PaginationDTO paginationParameters)
