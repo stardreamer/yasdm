@@ -27,6 +27,14 @@ namespace YASDM.Api.Controllers
         {
             var rooms = await _roomService.GetPaginated(paginationParameters);
 
+
+            Response.Headers.Add("X-Total-Count", rooms.TotalCount.ToString());
+            Response.Headers.Add("X-Total-Pages", rooms.TotalPages.ToString());
+            Response.Headers.Add("X-Current-Page", rooms.CurrentPage.ToString());
+            Response.Headers.Add("X-Page-Size", rooms.PageSize.ToString());
+            Response.Headers.Add("X-Count", rooms.Count.ToString());
+
+
             return rooms.Select(r => new RoomDTO
             {
                 Id = r.Id,
