@@ -100,7 +100,7 @@ namespace YASDM.Api.Services
 
         public async Task<User> GetEagerById(int id)
         {
-            return await _db.Users.Include(u => u.UserRooms).SingleOrDefaultAsync(u => u.Id == id);
+            return await _db.Users.Include(u => u.UserRooms).ThenInclude(ur => ur.User).Include(u => u.UserRooms).ThenInclude(ur => ur.Room).SingleOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task UpdateCredentials(int id, AuthRegisterDTO registerDTO)
