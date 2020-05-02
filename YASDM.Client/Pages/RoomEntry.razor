@@ -1,0 +1,22 @@
+@inherits RoomEntryViewModel
+
+<div class="row">
+    @if(ShowDetailedInfo is null)
+    {
+        <div class="col">
+            @Room.Name
+        </div>
+    }
+    else
+    {
+        <div class="col">
+            <a href="" @onclick="(() => ShowDetailedInfo(Room))" @onclick:preventDefault>@Room.Name</a>
+        </div>
+    }
+    @if(!(Selected is null))
+    {
+        <div class="col">
+            <button class="@ButtonClass" @onclick="(() => Selected(Room))">@ButtonTitle</button>
+        </div>  
+    }
+</div>

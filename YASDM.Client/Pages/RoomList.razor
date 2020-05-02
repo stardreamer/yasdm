@@ -1,0 +1,33 @@
+@inherits RoomListViewModel
+@page "/rooms"
+
+<h1>@Title</h1>
+
+@if (ShowErrors)
+{
+    <div class="alert alert-danger" role="alert">
+        <p>@Error</p>
+    </div>
+}
+else
+{
+    @if(Rooms is null)
+    {
+        <div style="height:20vh;" class="pt3">
+            <div class="progress">
+                <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated w-100" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+
+                </div>
+            </div>
+        </div>
+    }
+    else{
+        @foreach (var room in Rooms)
+        {
+            <RoomEntry Room="@room" ButtonClass="btn btn-primary" ButtonTitle="Join" ShowDetailedInfo="@ShowDetailedInfo" Selected="@Selected"/>
+        }
+        <button class="btn btn-secondary" @onclick="(() => PrevPage())">Prev</button>
+        <button class="btn btn-secondary" @onclick="(() => NextPage())">Next</button>
+    }
+}
+
