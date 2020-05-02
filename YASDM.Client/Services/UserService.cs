@@ -63,6 +63,7 @@ namespace YASDM.Client.Services
 
             return new PagedList<User>(users.Select(userDTO => new User
             {
+                Id = userDTO.Id,
                 UserName = userDTO.Username,
                 Email = userDTO.Email,
                 FirstName = userDTO.FirstName
