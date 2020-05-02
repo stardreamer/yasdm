@@ -70,9 +70,9 @@ namespace YASDM.Client.Pages
             await Update();
         }
 
-        protected void ShowDetailedInfo(User user)
+        protected async void ShowDetailedInfo(User user)
         {
-            State.SelectedUser = user;
+            State.SelectedUser = await UserService.GetEagerById(user.Id);
             NavigationManager.NavigateTo("/UserInfo");
         }
 
