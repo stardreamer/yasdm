@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using YASDM.Api.Services;
+using YASDM.Model;
 using YASDM.Model.DTO;
 using YASDM.Model.Services;
 
@@ -33,14 +34,7 @@ namespace YASDM.Api.Controllers
             Response.Headers.Add("X-Page-Size", users.PageSize.ToString());
             Response.Headers.Add("X-Count", users.Count.ToString());
 
-            return users.Select(u => new UserDTO
-            {
-                Id = u.Id,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                Username = u.UserName,
-                Email = u.Email
-            });
+            return users.Select(u => u.AsDTO());
         }
 
         [HttpGet("{id}")]
@@ -88,12 +82,7 @@ namespace YASDM.Api.Controllers
 
             var user = await _userService.Create(registerDTO);
 
-            return new UserDTO
-            {
-                Id = user.Id,
-                Username = user.UserName,
-                Email = user.Email
-            };
+            return user.AsDTO();
 
         }
 

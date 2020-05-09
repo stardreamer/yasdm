@@ -57,13 +57,7 @@ namespace YASDM.Api.Controllers
                     ScheduledDate = ur.Room.ScheduledDate
                 },
                 UserId = ur.UserId,
-                User = new UserDTO
-                {
-                    Id = ur.User.Id,
-                    FirstName = ur.User.FirstName,
-                    LastName = ur.User.LastName,
-                    Username = ur.User.UserName
-                }
+                User = ur.User.AsDTO()
 
             };
         }

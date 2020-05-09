@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using YASDM.Model.DTO;
 
 namespace YASDM.Model
 {
@@ -19,6 +20,18 @@ namespace YASDM.Model
         public byte[] PasswordSalt { get; set; }
 
         public List<RefreshToken> RefreshTokens { get; set; }
+
+        public UserDTO AsDTO()
+        {
+            return new UserDTO
+            {
+                Id = this.Id,
+                Username = this.UserName,
+                Email = this.Email,
+                FirstName = this.FirstName,
+                LastName = this.LastName
+            };
+        }
 
     }
 }
