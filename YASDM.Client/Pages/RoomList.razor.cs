@@ -56,7 +56,7 @@ namespace YASDM.Client.Pages
 
         protected async Task NextPage()
         {
-            if(CurrentPage.PageNumber == TotalPageNumber)
+            if (CurrentPage.PageNumber == TotalPageNumber)
                 return;
             CurrentPage.PageNumber += 1;
             await Update();
@@ -76,13 +76,24 @@ namespace YASDM.Client.Pages
             NavigationManager.NavigateTo("/RoomInfo");
         }
 
-        protected void Selected(Room room)
+        protected async void Join(Room room)
         {
-            MembershipService.Create(new MembershipDTO {RoomId = room.Id, UserId = State.User.Id});
+            var ur = await MembershipService.Create(new MembershipDTO { RoomId = room.Id, UserId = State.User.Id });
+            State.User.UserRooms.Add(ur);
+            StateHasChanged();
+        }
+
+        protected async void Leave(Room room)
+        {
+            var ur = State.User.UserRooms.First(ur => ur.RoomId == room.Id);
+            await MembershipService.Delete(ur.Id);
+            State.User.UserRooms.Remove(ur);
+            StateHasChanged();
         }
 
         protected override async void OnAfterRender(bool firstRender)
         {
+            Console.WriteLine(State.User.UserRooms);
             if (firstRender)
                 await Update();
         }

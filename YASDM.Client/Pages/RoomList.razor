@@ -24,7 +24,16 @@ else
     else{
         @foreach (var room in Rooms)
         {
-            <RoomEntry Room="@room" ButtonClass="btn btn-primary" ButtonTitle="Join" ShowDetailedInfo="@ShowDetailedInfo" Selected="@Selected"/>
+            @if (State.User.UserRooms.Any(ur => ur.RoomId == room.Id))
+            {
+                <RoomEntry Room="@room" ButtonClass="btn btn-danger" ButtonTitle="Leave" ShowDetailedInfo="@ShowDetailedInfo" Selected="@Leave"/>
+                
+            }
+            else
+            {
+                <RoomEntry Room="@room" ButtonClass="btn btn-primary" ButtonTitle="Join" ShowDetailedInfo="@ShowDetailedInfo" Selected="@Join"/>
+            }
+            
         }
         <button class="btn btn-secondary" @onclick="(() => PrevPage())">Prev</button>
         <button class="btn btn-secondary" @onclick="(() => NextPage())">Next</button>
