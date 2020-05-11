@@ -13,5 +13,7 @@ namespace YASDM.Model
         public DateTime ScheduledDate { get; set; }
 
         public List<UserRoom> UserRooms { get; set; }
+
+        public ICollection<UserPair> UserPairs { get; set; }
     }
 }
