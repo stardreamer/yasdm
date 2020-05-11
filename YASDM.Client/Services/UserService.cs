@@ -59,7 +59,7 @@ namespace YASDM.Client.Services
                 Id = user.Id,
                 LastName = user.LastName,
                 UserName = user.Username,
-                UserRooms = user.Rooms.Select(u => new UserRoom() {RoomId = u.Id, UserId = user.Id}).ToList()
+                UserRooms = user.Rooms.Select(r => new UserRoom() {RoomId = r.Id, UserId = user.Id}).ToList()
             };
         }
 
