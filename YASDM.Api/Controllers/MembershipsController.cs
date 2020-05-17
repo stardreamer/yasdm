@@ -49,13 +49,7 @@ namespace YASDM.Api.Controllers
             {
                 Id = ur.Id,
                 RoomId = ur.RoomId,
-                Room = new RoomDTO
-                {
-                    Id = ur.Room.Id,
-                    Name = ur.Room.Name,
-                    CreationDate = ur.Room.CreationDate,
-                    ScheduledDate = ur.Room.ScheduledDate
-                },
+                Room = ur.Room.AsDTO(),
                 UserId = ur.UserId,
                 User = ur.User.AsDTO()
 

@@ -35,13 +35,7 @@ namespace YASDM.Api.Controllers
             Response.Headers.Add("X-Count", rooms.Count.ToString());
 
 
-            return rooms.Select(r => new RoomDTO
-            {
-                Id = r.Id,
-                Name = r.Name,
-                CreationDate = r.CreationDate,
-                ScheduledDate = r.ScheduledDate
-            });
+            return rooms.Select(r => r.AsDTO());
         }
 
         [HttpGet("{id}")]

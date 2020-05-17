@@ -57,13 +57,7 @@ namespace YASDM.Api.Controllers
                 Username = user.UserName,
                 Email = user.Email,
                 Rooms = user.UserRooms.Select(
-                    ur => new RoomDTO
-                    {
-                        Id = ur.Room.Id,
-                        CreationDate = ur.Room.CreationDate,
-                        Name = ur.Room.Name,
-                        ScheduledDate = ur.Room.ScheduledDate
-                    }).ToList()
+                    ur => ur.Room.AsDTO()).ToList()
             };
         }
 
