@@ -85,15 +85,18 @@ namespace YASDM.Client.Pages
 
         protected async void Leave(Room room)
         {
-            var ur = State.User.UserRooms.First(ur => ur.RoomId == room.Id);
-            await MembershipService.Delete(ur.Id);
-            State.User.UserRooms.Remove(ur);
+            var ur = (await MembershipService.GetPaginated(new PaginationDTO(), new MembershipSearchDTO {UserId=State.User.Id, RoomId=room.Id})).FirstOrDefault();
+            if(!(ur is null))
+            {
+                await MembershipService.Delete(ur.Id);
+            }
+            var mToRemove = State.User.UserRooms.First(ur => ur.UserId == State.User.Id && ur.RoomId == room.Id);
+            State.User.UserRooms.Remove(mToRemove);
             StateHasChanged();
         }
 
         protected override async void OnAfterRender(bool firstRender)
         {
-            Console.WriteLine(State.User.UserRooms);
             if (firstRender)
                 await Update();
         }

@@ -25,9 +25,15 @@ namespace YASDM.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<MembershipDTO>> GetMembershipsAsync([FromQuery] PaginationDTO paginationParameters)
+        public async Task<IEnumerable<MembershipDTO>> GetMembershipsAsync([FromQuery] PaginationDTO paginationParameters, [FromQuery] MembershipSearchDTO searchDTO)
         {
-            var urs = await _membershipService.GetPaginated(paginationParameters);
+            var urs = await _membershipService.GetPaginated(paginationParameters, searchDTO);
+
+             Response.Headers.Add("X-Total-Count", urs.TotalCount.ToString());
+            Response.Headers.Add("X-Total-Pages", urs.TotalPages.ToString());
+            Response.Headers.Add("X-Current-Page", urs.CurrentPage.ToString());
+            Response.Headers.Add("X-Page-Size", urs.PageSize.ToString());
+            Response.Headers.Add("X-Count", urs.Count.ToString());
 
             return urs.Select(ur => new MembershipDTO
             {
