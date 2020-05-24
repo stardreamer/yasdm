@@ -75,9 +75,49 @@ namespace YASDM.Api.Services
             return ur;
         }
 
-        public async Task<PagedList<UserRoom>> GetPaginated(PaginationDTO paginationParameters)
+        private static bool  AcceptableUserRoom(UserRoom ur, MembershipSearchDTO searchDTO)
         {
-            return await _db.UserRooms.ToPagedListAsync(u => u.Id, paginationParameters.PageNumber, paginationParameters.PageSize);
+            if(searchDTO is null)
+            {
+                return true;
+            }
+            if((searchDTO.RoomId is null) && (searchDTO.UserId is null))
+            {
+                return true;
+            }
+
+            if(!(searchDTO.RoomId is null) && searchDTO.RoomId != ur.RoomId)
+            {
+                return false;
+            }
+
+            if(!(searchDTO.UserId is null) && searchDTO.UserId != ur.UserId)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+
+        public async Task<PagedList<UserRoom>> GetPaginated(PaginationDTO paginationParameters, MembershipSearchDTO searchDTO = null)
+        {
+            if(searchDTO is null || (searchDTO.RoomId is null) && (searchDTO.UserId is null))
+            {
+                return await _db.UserRooms.ToPagedListAsync(u => u.Id, paginationParameters.PageNumber, paginationParameters.PageSize);
+            }
+            var exp =  _db.UserRooms.AsQueryable();
+            if(!(searchDTO.RoomId is null))
+            {
+                exp = exp.Where(ur => ur.RoomId == searchDTO.RoomId.Value);
+            }
+
+            if(!(searchDTO.UserId is null))
+            {
+                exp = exp.Where(ur => ur.UserId == searchDTO.UserId.Value);
+            }
+
+            return await exp.ToPagedListAsync(u => u.Id, paginationParameters.PageNumber, paginationParameters.PageSize);
         }
 
         public async Task Update(int id, MembershipDTO membershipDTO)

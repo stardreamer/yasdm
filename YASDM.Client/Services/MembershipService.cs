@@ -36,9 +36,13 @@ namespace YASDM.Client.Services
             };
         }
 
-        public Task Delete(int id)
+        public async Task Delete(int id)
         {
-            throw new NotImplementedException();
+            var response = await _httpClient.DeleteAsync($"api/memberships/{id}");
+            if (!response.IsSuccessStatusCode)
+            {
+                throw await ApiUtils.GetClientException(response.Content);
+            }
         }
 
         public Task<IEnumerable<UserRoom>> GetAll()
@@ -56,9 +60,25 @@ namespace YASDM.Client.Services
             throw new NotImplementedException();
         }
 
-        public Task<PagedList<UserRoom>> GetPaginated(PaginationDTO paginationParameters)
+        public async Task<PagedList<UserRoom>> GetPaginated(PaginationDTO paginationParameters, MembershipSearchDTO searchDTO = null)
         {
-            throw new NotImplementedException();
+            var response = await _httpClient.GetAsync($"api/memberships?{paginationParameters.AsQueryString()}&{searchDTO?.AsQueryString() ?? ""}", HttpCompletionOption.ResponseHeadersRead);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw await ApiUtils.GetClientException(response.Content);
+            }
+
+            var memberships = JsonSerializer.Deserialize<MembershipDTO[]>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var totalCount = int.Parse(response.Headers.GetValues("X-Total-Count").First());
+            var currentPageNumber = int.Parse(response.Headers.GetValues("X-Current-Page").First());
+            var pageSize = int.Parse(response.Headers.GetValues("X-Page-Size").First());
+
+            return new PagedList<UserRoom>(memberships.Select(mDTO => new UserRoom
+            {
+                Id = mDTO.Id,
+                RoomId = mDTO.RoomId,
+                UserId = mDTO.UserId
+            }).ToList(), totalCount, currentPageNumber, pageSize);
         }
 
         public Task Update(int id, MembershipDTO membershipDTO)
