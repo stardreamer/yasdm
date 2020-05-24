@@ -15,7 +15,11 @@ namespace YASDM.Model.DTO
 
             if(RoomId.HasValue)
             {
-                req += $"&roomid={RoomId.Value}";
+                if(!string.IsNullOrWhiteSpace(req))
+                {
+                    req += "&";
+                }
+                req += $"roomid={RoomId.Value}";
             }
 
             return req;
