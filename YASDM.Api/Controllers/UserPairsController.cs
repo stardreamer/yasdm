@@ -25,9 +25,14 @@ namespace YASDM.Api.Controllers
         [HttpGet]
         public async Task<IEnumerable<UserPairDTO>> GetMembershipsAsync([FromQuery] PaginationDTO paginationParameters, [FromQuery] UserPairSearchDTO searchDTO)
         {
-            var urs = await _userpairService.GetPaginated(paginationParameters, searchDTO);
+            var realSearchDTO = searchDTO ?? new UserPairSearchDTO();
 
-             Response.Headers.Add("X-Total-Count", urs.TotalCount.ToString());
+            realSearchDTO.User1Id = int.Parse(User.Identity.Name);
+            
+
+            var urs = await _userpairService.GetPaginated(paginationParameters, realSearchDTO);
+
+            Response.Headers.Add("X-Total-Count", urs.TotalCount.ToString());
             Response.Headers.Add("X-Total-Pages", urs.TotalPages.ToString());
             Response.Headers.Add("X-Current-Page", urs.CurrentPage.ToString());
             Response.Headers.Add("X-Page-Size", urs.PageSize.ToString());
@@ -37,7 +42,7 @@ namespace YASDM.Api.Controllers
             {
                 Id = ur.Id,
                 User1Id = ur.User1Id,
-                User2Id = ur.User2Id,
+                User2Id = -1,
                 User1Alias = ur.User1Alias,
                 User2Alias = ur.User2Alias,
                 RoomId = ur.RoomId
@@ -51,6 +56,11 @@ namespace YASDM.Api.Controllers
         public async Task<ActionResult<UserPairDTO>> GetMembershipDetailedAsync(int id)
         {
             var ur = await _userpairService.GetEagerById(id);
+
+            var userId = int.Parse(User.Identity.Name);
+
+            if(userId != ur.User1Id)
+                return Unauthorized();
 
             return new UserPairDTO
             {
