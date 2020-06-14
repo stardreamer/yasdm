@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using YASDM.Model.Services;
 
 namespace YASDM.Api.Services
 {
+
     public class RoomService : IRoomService
     {
         private YASDMApiDbContext _db;
@@ -75,7 +77,7 @@ namespace YASDM.Api.Services
 
         public async Task PartialUpdate(int id, List<PatchDTO> patches)
         {
-            var room = await _db.Rooms.Where(u => u.Id == id).SingleOrDefaultAsync();
+            var room = await _db.Rooms.Include(r => r.UserRooms).Include(r => r.UserPairs).Where(u => u.Id == id).SingleOrDefaultAsync();
 
             if (room is null)
             {
@@ -84,7 +86,50 @@ namespace YASDM.Api.Services
 
             foreach (var patch in patches)
             {
-                
+                if (string.Equals(patch.PropertyName, nameof(room.State), StringComparison.OrdinalIgnoreCase))
+                {
+                    try
+                    {
+                        var value = (RoomState)Enum.Parse(typeof(RoomState), patch.PropertyValue);
+
+                        room.State = value;
+
+                        if (value == RoomState.Closed)
+                        {
+                            var members = room.UserRooms.Select(ur => ur.UserId).ToList();
+
+                            members.Shuffle();
+
+                            var membersCopy = members.ToList();
+                            var first = membersCopy[0];
+                            membersCopy.RemoveAt(0);
+                            membersCopy.Add(first);
+
+                            _db.UserPairs.RemoveRange(room.UserPairs);
+
+                            await _db.UserPairs.AddRangeAsync(
+                                members.Zip(membersCopy)
+                                .Select(
+                                    lr => new UserPair
+                                    {
+                                        RoomId = room.Id,
+                                        User1Id = lr.First,
+                                        User2Id = lr.Second,
+                                        User1Alias = members.IndexOf(lr.First).ToString(),
+                                        User2Alias = members.IndexOf(lr.Second).ToString(),
+                                    }
+                                )
+                            );
+
+                            await _db.SaveChangesAsync();
+
+                        }
+                    }
+                    catch
+                    {
+                        throw new ApiException($"Unknown state {patch.PropertyValue}");
+                    }
+                }
             }
         }
 
