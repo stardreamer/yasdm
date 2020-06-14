@@ -4,10 +4,18 @@ using YASDM.Model.DTO;
 
 namespace YASDM.Model
 {
+    public enum RoomState
+    {
+        Open,
+        Closed
+    }
+
     public class Room
     {
         public string Name { get; set; }
         public int Id { get; set; }
+
+        public RoomState State { get; set; } = RoomState.Open;
 
         public DateTime CreationDate { get; set; }
 
@@ -27,6 +35,6 @@ namespace YASDM.Model
                 ScheduledDate = this.ScheduledDate
             };
         }
-        
+
     }
 }

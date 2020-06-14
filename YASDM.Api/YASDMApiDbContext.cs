@@ -1,3 +1,4 @@
+using System;
 using Microsoft.EntityFrameworkCore;
 using YASDM.Model;
 
@@ -37,6 +38,9 @@ namespace YASDM.Api
             roomEntity.HasKey(room => room.Id);
 
             roomEntity.HasMany(r => r.UserPairs).WithOne(up => up.Room).HasForeignKey(up => up.RoomId).OnDelete(DeleteBehavior.Cascade);
+            roomEntity.Property(r => r.State).HasConversion(
+            v => v.ToString(),
+            v => (RoomState)Enum.Parse(typeof(RoomState), v)).HasDefaultValue(RoomState.Open);
 
 
             var userRoomEntity = modelBuilder.Entity<UserRoom>();
