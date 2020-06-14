@@ -73,6 +73,21 @@ namespace YASDM.Api.Services
             return await _db.Rooms.ToPagedListAsync(u => u.Id, paginationParameters.PageNumber, paginationParameters.PageSize);
         }
 
+        public async Task PartialUpdate(int id, List<PatchDTO> patches)
+        {
+            var room = await _db.Rooms.Where(u => u.Id == id).SingleOrDefaultAsync();
+
+            if (room is null)
+            {
+                throw new ApiNotFoundException();
+            }
+
+            foreach (var patch in patches)
+            {
+                
+            }
+        }
+
         public async Task Update(int id, RoomDTO roomDTO)
         {
             var room = await _db.Rooms.Where(u => u.Id == id).SingleOrDefaultAsync();

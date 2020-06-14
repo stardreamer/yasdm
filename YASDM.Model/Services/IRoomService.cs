@@ -18,6 +18,8 @@ namespace YASDM.Model.Services
 
         Task Update(int id, RoomDTO roomDTO);
 
+        Task PartialUpdate(int id, List<PatchDTO> patches);
+
         Task Delete(int id);
     }
 }

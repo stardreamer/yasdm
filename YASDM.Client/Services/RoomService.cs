@@ -79,6 +79,11 @@ namespace YASDM.Client.Services
             }).ToList(), totalCount, currentPageNumber, pageSize);
         }
 
+        public Task PartialUpdate(int id, List<PatchDTO> patches)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task Update(int id, RoomDTO roomDTO)
         {
             throw new NotImplementedException();
