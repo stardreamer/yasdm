@@ -74,6 +74,7 @@ namespace YASDM.Api
 
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IRoomService, RoomService>();
+            services.AddTransient<IUserPairService, UserPairService>();
             services.AddTransient<IMembershipService, MembershipService>();
             services.AddTransient<ITokenService, TokenService>();
         }
