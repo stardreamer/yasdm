@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\YASDM.Model\YASDM.Model.csproj" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.18" />
   </ItemGroup>
   
 </Project>
